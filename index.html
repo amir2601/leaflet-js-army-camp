@@ -5,13 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Leaflet Map - Dhaka</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <style>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="src/input.css">
+    <link rel="stylesheet" href="src/output.css">
+    <!-- <style>
         #map { height: 600px; }
-    </style>
+    </style> -->
 </head>
-<body>
-    <h2>আর্মি ক্যাম্পের লোকেশন এবং কন্টাক্ট নাম্বার</h2>
-    <div id="map"></div>
+<body class="relative">
+    <h2 class="text-xl md:text-3xl text-center py-4 md:py-8 bg-green-800 text-white absolute z-10 w-full top-0">আর্মি ক্যাম্পের লোকেশন এবং কন্টাক্ট নাম্বার</h2>
+    <div id="map" class="h-screen z-0"></div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
@@ -49,5 +52,9 @@
             marker.bindTooltip("<b>" + location.name + "</b><br>" + location.phone, { permanent: false, direction: "top" });
         });
     </script>
+
+    <footer class="text-center text-gray-600 absolute bottom-5 left-5">
+        <p class="text-sm">@Amir Hossin Riad</p>
+    </footer>
 </body>
 </html>
