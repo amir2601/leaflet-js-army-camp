@@ -3,18 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leaflet Map - Dhaka</title>
+    <link rel="shortcut icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Roundel_of_Bangladesh_%E2%80%93_Army_Aviation.svg/1200px-Roundel_of_Bangladesh_%E2%80%93_Army_Aviation.svg.png" type="image/x-icon">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="src/input.css">
     <link rel="stylesheet" href="src/output.css">
-    <!-- <style>
-        #map { height: 600px; }
-    </style> -->
 </head>
 <body class="relative">
     <h2 class="text-xl md:text-3xl text-center py-4 md:py-6 bg-green-800 text-white w-full">আর্মি ক্যাম্পের লোকেশন এবং কন্টাক্ট নাম্বার</h2>
-    <div id="map" class="h-screen z-0"></div>
+    <div id="map" class="h-screen"></div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
@@ -31,29 +28,58 @@
             popupAnchor: [0, -32]
         });
 
+        var userIcon = L.icon({
+            iconUrl: 'https://icon-library.com/images/location-marker-icon/location-marker-icon-15.jpg',
+            iconSize: [22, 22],
+            iconAnchor: [8, 8]
+        });
+
         var locations = [
             { name: "Rampura", phone: "Lieutenant Colonel Rehgir Al Shahid: +8801769053150", lat: 23.7645, lon: 90.4254 },
             { name: "Jatrabari", phone: "Captain Hemel: +8801766162077", lat: 23.7104, lon: 90.4509 },
             { name: "Uttara Airport Diabari", phone: "CO: 01769024280", lat: 23.8741, lon: 90.3797 },
             { name: "Mirpur Area 1,2 - 6", phone: "Captain Mahomud: 01833585736", lat: 23.8041, lon: 90.3668 },
-            { name: "Mohammadpur", phone: "Captain Saikat: +8801769510515", lat: 23.7641, lon: 90.3679 },
-            { name: "Segunbagicha", phone: "Captain Ashik: +8801738998458", lat: 23.7323, lon: 90.4104 },
-            { name: "Uttara", phone: "Captain Abrar: +8801741569832", lat: 23.8759, lon: 90.3904 },
-            { name: "Mirpur 10,11-14", phone: "Captain Atahar Ishtiaq: +8801769511144", lat: 23.8151, lon: 90.3654 },
-            { name: "Paltan", phone: "Captain Zarraf: 01708375371", lat: 23.7350, lon: 90.4125 },
-            { name: "Baridhara", phone: "Captain Nasif: +8801769510803", lat: 23.7983, lon: 90.4234 },
-            { name: "Agargaon", phone: "Lieutenant Imrul: +8801705260019", lat: 23.7735, lon: 90.3856 },
-            { name: "Gulshan/Banani", phone: "Adjt 21 Engrs Bn: +8801769013094", lat: 23.7925, lon: 90.4078 },
-            { name: "Motijheel", phone: "Captain Shihab: +8801766047323", lat: 23.7333, lon: 90.4175 }
+            { name: "Mohammadpur", phone: "Captain Saikat: +8801769510515", lat: 23.7641, lon: 90.3679 }
         ];
 
         locations.forEach(function (location) {
             var marker = L.marker([location.lat, location.lon], { icon: armyIcon }).addTo(map);
             marker.bindTooltip("<b>" + location.name + "</b><br>" + location.phone, { permanent: false, direction: "top" });
         });
+
+        function getDistance(lat1, lon1, lat2, lon2) {
+            var R = 6371;
+            var dLat = (lat2 - lat1) * Math.PI / 180;
+            var dLon = (lon2 - lon1) * Math.PI / 180;
+            var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return R * c;
+        }
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function (position) {
+                var userLat = position.coords.latitude;
+                var userLon = position.coords.longitude;
+
+                var userMarker = L.marker([userLat, userLon], { icon: userIcon }).addTo(map);
+                userMarker.bindTooltip("আপনার বর্তমান অবস্থান", { permanent: true, direction: "right" });
+                map.setView([userLat, userLon], 14);
+
+                var nearest = locations.reduce(function (prev, curr) {
+                    return getDistance(userLat, userLon, curr.lat, curr.lon) < getDistance(userLat, userLon, prev.lat, prev.lon) ? curr : prev;
+                });
+
+                L.marker([nearest.lat, nearest.lon], { icon: armyIcon }).addTo(map)
+                    .bindPopup("নিকটতম আর্মি ক্যাম্প: <b>" + nearest.name + "</b><br>" + nearest.phone).openPopup();
+            }, function () {
+                alert("লোকেশন পাওয়া যাচ্ছে না! অনুগ্রহ করে আপনার ব্রাউজারের GPS অনুমতি দিন অথবা মোবাইলে GPS চালু করুন।");
+            }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
+        }
     </script>
 
-    <footer class="text-center text-gray-600 absolute bottom-20 left-5">
+    <footer class="text-center text-gray-600 absolute bottom-32 md:bottom-20 left-5">
         <p class="text-sm">@Amir Hossin Riad</p>
     </footer>
 </body>
