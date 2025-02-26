@@ -30,7 +30,7 @@
 
         var userIcon = L.icon({
             iconUrl: 'https://icon-library.com/images/location-marker-icon/location-marker-icon-15.jpg',
-            iconSize: [22, 22],
+            iconSize: [32, 32],
             iconAnchor: [8, 8]
         });
 
@@ -74,12 +74,12 @@
                 L.marker([nearest.lat, nearest.lon], { icon: armyIcon }).addTo(map)
                     .bindPopup("নিকটতম আর্মি ক্যাম্প: <b>" + nearest.name + "</b><br>" + nearest.phone).openPopup();
             }, function () {
-                alert("লোকেশন পাওয়া যাচ্ছে না! অনুগ্রহ করে আপনার ব্রাউজারের GPS অনুমতি দিন অথবা মোবাইলে GPS চালু করুন।");
+                alert("লোকেশন পাওয়া যাচ্ছে না! অনুগ্রহ করে আপনার ব্রাউজারের লোকেশন এক্সেস দিন অথবা মোবাইলের লোকেশন অন করুন।");
             }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
         }
     </script>
 
-    <footer class="text-center text-gray-600 absolute bottom-32 md:bottom-20 left-5">
+    <footer class="text-center text-gray-600 absolute bottom-32 md:bottom-20 left-5 z-20">
         <p class="text-sm">@Amir Hossin Riad</p>
     </footer>
 </body>
